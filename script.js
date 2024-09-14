@@ -1,7 +1,22 @@
 const socket = io();
 
-// Object to hold markers for each socket ID
-const markers = {};
+// Watch user position and send location updates to the server
+if (navigator.geolocation) {
+    navigator.geolocation.watchPosition(
+        (position) => {
+            const { latitude, longitude } = position.coords;
+            socket.emit("send-location", { latitude, longitude });
+        },
+        (error) => {
+            console.error(error);
+        },
+        {
+            enableHighAccuracy: true,
+            maximumAge: 10000,
+            timeout: 5000,
+        }
+    );
+}
 
 // Initialize the map and set default view
 const map = L.map("map").setView([0, 0], 10);
@@ -11,31 +26,26 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "TrackME",
 }).addTo(map);
 
-// Throttle updates to avoid frequent zoom changes
-let lastUpdate = 0;
-const updateInterval = 1000; // Update every 1000 milliseconds
+// Object to hold markers for each socket ID
+const markers = {};
 
 // Listen for location updates from the server
 socket.on("receive-location", (data) => {
-    const now = Date.now();
-    if (now - lastUpdate < updateInterval) return;
-    lastUpdate = now;
-
     const { id, latitude, longitude, name } = data;
 
     // Update existing marker or create a new one
     if (markers[id]) {
         markers[id].setLatLng([latitude, longitude]);
         markers[id].setPopupContent(`User ID: ${id}<br>Name: ${name || 'No name set'}`);
-    } else {
+    }
+    else {
         // Create a new marker and bind a popup with user ID and name
         markers[id] = L.marker([latitude, longitude])
             .addTo(map)
             .bindPopup(`User ID: ${id}<br>Name: ${name || 'No name set'}`);
     }
 
-    // Set the view only if needed
-    map.setView([latitude, longitude], map.getZoom()); // Use the current zoom level
+    map.setView([latitude, longitude], 11);
 });
 
 // Listen for name updates from the server
