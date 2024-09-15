@@ -50,7 +50,7 @@ socket.on('receive-location', (data) => {
     const { id, latitude, longitude, name } = data;
 
     console.log(`Received location update: ${id}, ${latitude}, ${longitude}, Name: ${name}`); // Debug statement
-
+    map.setView([latitude,longitude],14);
     // Update existing marker or create a new one
     if (markers[id]) {
         markers[id].setLatLng([latitude, longitude]);
