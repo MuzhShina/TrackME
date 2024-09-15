@@ -33,7 +33,7 @@ if (navigator.geolocation) {
 
 
 // Initialize the map and set default view
-const map = L.map('map').setView([0, 0], 12);
+const map = L.map('map').setView([0, 0], 15);
 
 // Add OpenStreetMap tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -50,7 +50,7 @@ socket.on('receive-location', (data) => {
     const { id, latitude, longitude, name } = data;
 
     console.log(`Received location update: ${id}, ${latitude}, ${longitude}, Name: ${name}`); // Debug statement
-    map.setView([latitude,longitude],14);
+    map.setView([latitude,longitude],15);
     // Update existing marker or create a new one
     if (markers[id]) {
         markers[id].setLatLng([latitude, longitude]);
