@@ -61,7 +61,7 @@ socket.on('receive-location', (data) => {
             .bindPopup(`User ID: ${id}<br>Name: ${name}`);
     }
 
-    map.setView([latitude, longitude], 11);
+    map.setView([latitude, longitude], 15);
 });
 
 // Handle user disconnection
